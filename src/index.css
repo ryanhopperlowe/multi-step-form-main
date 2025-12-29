@@ -6,9 +6,9 @@
 
 @theme {
   --font-*: initial;
-  --font-primary: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji",
-    "Segoe UI Emoji";
+  --font-primary:
+    "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji", "Segoe UI Emoji";
 
   --color-*: initial;
   --color-blue-900: hsl(213, 96%, 18%);
@@ -24,7 +24,8 @@
   --color-white: hsl(0, 100%, 100%);
 
   --breakpoint-*: initial;
-  --breakpoint-md: 375px;
+  --breakpoint-sm: 0;
+  --breakpoint-md: 400px;
 }
 
 :root {

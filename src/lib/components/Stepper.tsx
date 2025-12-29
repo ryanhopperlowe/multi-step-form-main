@@ -1,29 +1,58 @@
-import { state, steps } from "../store";
-import { cn } from "@/lib/utils";
+import desktopImg from "@/assets/images/bg-sidebar-desktop.svg";
 import mobileImg from "@/assets/images/bg-sidebar-mobile.svg";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { cn } from "@/lib/utils";
 import { useSnapshot } from "valtio";
+import { state, steps } from "../store";
 
 export function Stepper() {
   const { activeStep, setStep } = useSnapshot(state);
-  return (
-    <ul className="flex relative justify-center p-8 w-full gap-4 overflow-visible">
-      {steps.map(({ id }, i) => (
-        <li key={id} className="z-10">
-          <button
-            className={cn(
-              "rounded-full size-8 text-center m-auto text-blue-200 border border-blue-200 font-bold flex items-center justify-center",
-              {
-                ["bg-blue-200 text-blue-900"]: activeStep === i,
-              }
-            )}
-            onClick={() => setStep(i)}
-          >
-            {id}
-          </button>
-        </li>
-      ))}
 
-      <img src={mobileImg} className="absolute inset-0" />
-    </ul>
+  const { isSm } = useBreakpoint();
+
+  return (
+    <div className={`relative md:m-4`}>
+      <ul className="my-8 flex w-full justify-center gap-4 overflow-visible md:ms-8 md:h-full md:w-75 md:flex-col md:items-start md:justify-start md:gap-12">
+        {steps.map(({ id, title }, i) => (
+          <li key={id} className="z-10">
+            <button
+              onClick={() => setStep(i)}
+              className="flex items-center gap-4"
+            >
+              <div
+                className={cn(
+                  "m-auto flex size-8 items-center justify-center rounded-full border border-blue-200 text-center font-bold text-blue-200",
+                  {
+                    ["bg-blue-200 text-blue-900"]: activeStep === i,
+                  },
+                )}
+              >
+                {id}
+              </div>
+
+              <div className="hidden flex-col text-start md:flex">
+                <label className="font-medium text-blue-300">
+                  STEP {i + 1}
+                </label>
+
+                <p className="text-lg font-bold text-blue-100">
+                  {title.toUpperCase()}
+                </p>
+              </div>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {isSm ? (
+        <img src={mobileImg} className="absolute inset-0 w-full object-fill" />
+      ) : (
+        <img
+          src={desktopImg}
+          className="absolute inset-0 h-full w-full rounded-xl object-cover"
+          alt=""
+        />
+      )}
+    </div>
   );
 }
