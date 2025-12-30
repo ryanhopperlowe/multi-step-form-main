@@ -83,6 +83,7 @@ export function Panel() {
           {activeStep === 0 && <Step1 />}
           {activeStep === 1 && <Step2 />}
           {activeStep === 2 && <Step3 isYearly={isYearly} />}
+          {activeStep === 3 && <Step4 />}
         </form>
       </FormProvider>
     </div>
@@ -125,7 +126,7 @@ const Step1 = () => {
   );
 };
 
-const radioInfo = [
+const planInfo = [
   {
     id: "arcade",
     label: "Arcade",
@@ -155,15 +156,10 @@ const Step2 = () => {
 
   const isYearly = watch("yearly");
 
-  const calculatePrice = (monthly: number) => {
-    if (isYearly) return `$${monthly * 10}/yr`;
-    return `${monthly}/mo`;
-  };
-
   return (
     <div className="my-4 flex w-full flex-col gap-4 md:gap-8">
       <div className="flex flex-col gap-4 md:flex-row md:justify-between">
-        {radioInfo.map(({ icon, label, monthly, id }) => (
+        {planInfo.map(({ icon, label, monthly, id }) => (
           <label
             key={id}
             className="flex items-center gap-4 rounded-lg border border-gray-500 p-4 has-checked:border-purple-600 has-checked:bg-blue-100 has-focus-within:outline has-focus-within:outline-purple-600 md:flex-1 md:flex-col md:items-start md:gap-8"
@@ -173,7 +169,9 @@ const Step2 = () => {
             <span className="flex flex-col">
               <span className="font-bold">{label}</span>
 
-              <span className="text-gray-500">{calculatePrice(monthly)}</span>
+              <span className="text-gray-500">
+                {calculatePrice(monthly, isYearly)}
+              </span>
               {isYearly && <span className="text-sm">2 months free</span>}
             </span>
             <input
@@ -208,7 +206,7 @@ const Step2 = () => {
   );
 };
 
-const checkboxInfo = [
+const addonInfo = [
   {
     id: "onlineService" as const,
     title: "Online Service",
@@ -232,14 +230,9 @@ const checkboxInfo = [
 const Step3 = ({ isYearly }: { isYearly: boolean }) => {
   const { register } = useFormContext<z.infer<typeof schema3>>();
 
-  const calculatePrice = (monthly: number) => {
-    if (isYearly) return `$${monthly * 10}/yr`;
-    return `${monthly}/mo`;
-  };
-
   return (
     <div className="my-4 flex flex-col gap-4">
-      {checkboxInfo.map(({ description, monthly, title, id }) => (
+      {addonInfo.map(({ description, monthly, title, id }) => (
         <label
           key={title}
           className="group flex items-center gap-4 rounded-xl p-4 outline outline-gray-500 transition-all duration-100 has-checked:bg-blue-100 has-checked:outline-purple-600 has-focus-within:outline-2 has-focus-within:outline-purple-600"
@@ -258,9 +251,80 @@ const Step3 = ({ isYearly }: { isYearly: boolean }) => {
             <span className="text-gray-500">{description}</span>
           </span>
 
-          <span className="text-purple-600">{calculatePrice(monthly)}</span>
+          <span className="text-purple-600">
+            {calculatePrice(monthly, isYearly)}
+          </span>
         </label>
       ))}
     </div>
   );
 };
+
+const Step4 = () => {
+  const { watch } = useFormContext<z.infer<typeof totalSchema>>();
+
+  const plan = watch("plan");
+  const yearly = watch("yearly");
+
+  const foundPlan = planInfo.find(({ id }) => id === plan);
+
+  const addons = addonInfo.filter((addon) => watch(addon.id));
+
+  const totalMonthly = [
+    foundPlan?.monthly ?? 0,
+    ...addons.map((a) => a.monthly),
+  ].reduce((sum, val) => sum + val, 0);
+
+  return (
+    <div className="mt-8 space-y-4">
+      <div className="space-y-4 rounded-md bg-blue-100 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-bold">
+              {foundPlan?.label} ({yearly ? "Yearly" : "Monthly"})
+            </p>
+            <button
+              className="cursor-pointer text-gray-500 underline"
+              onClick={() => state.setStep(2)}
+            >
+              Change
+            </button>
+          </div>
+
+          <p className="font-bold">
+            {calculatePrice(foundPlan?.monthly ?? 0, yearly)}
+          </p>
+        </div>
+
+        <div className="h-px w-full bg-gray-500/60" />
+
+        {addons.map((addon) => {
+          return (
+            <div className="flex items-center justify-between" key={addon.id}>
+              <p className="text-gray-500">{addon.title}</p>
+
+              <p className="font-medium">
+                +{calculatePrice(addon.monthly ?? 0, yearly)}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="flex items-center justify-between p-4">
+        <span className="text-gray-500">
+          Total (per {yearly ? "year" : "month"})
+        </span>
+
+        <span className="text-lg font-bold text-purple-600">
+          {calculatePrice(totalMonthly, yearly)}
+        </span>
+      </p>
+    </div>
+  );
+};
+
+function calculatePrice(monthly: number, yearly: boolean) {
+  if (yearly) return `$${monthly * 10}/yr`;
+  return `$${monthly}/mo`;
+}
