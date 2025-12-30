@@ -39,7 +39,7 @@ export const state = proxy({
   size: steps.length,
   setStep: (step: number) => (state.activeStep = step),
   nextStep: () => {
-    if (state.activeStep < state.size) {
+    if (state.activeStep < state.size - 1) {
       state.activeStep++;
     }
   },
@@ -47,5 +47,11 @@ export const state = proxy({
     if (state.activeStep > 0) {
       state.activeStep -= 1;
     }
+  },
+  get isLastStep() {
+    return state.activeStep === state.size - 1;
+  },
+  get hasPrev() {
+    return state.activeStep > 0;
   },
 });

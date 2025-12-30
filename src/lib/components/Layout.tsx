@@ -1,3 +1,4 @@
+import { Footer } from "./Footer";
 import { Panel } from "./Panel";
 import { Stepper } from "./Stepper";
 
@@ -13,8 +14,4 @@ export function Layout() {
       </div>
     </div>
   );
-}
-
-function Footer() {
-  return "Footer";
 }
