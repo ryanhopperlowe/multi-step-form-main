@@ -6,12 +6,12 @@ export function Panel() {
   const { activeStep } = useSnapshot(state);
   const step = steps[activeStep];
   return (
-    <div className="mx-4 rounded-xl bg-white p-8">
-      <h2 className="text-xl font-bold text-blue-900 text-shadow-blue-900">
+    <div className="container mx-4 max-w-lg rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:bg-transparent">
+      <h2 className="text-xl font-bold text-blue-900 text-shadow-blue-900 md:text-3xl">
         {step.title}
       </h2>
 
-      <p className="text-gray-500">{step.description}</p>
+      <p className="text-gray-500 md:pt-2">{step.description}</p>
 
       <Step1 />
     </div>
@@ -20,7 +20,7 @@ export function Panel() {
 
 const Step1 = () => {
   return (
-    <div className="my-4 flex flex-col gap-4">
+    <div className="my-4 flex w-full flex-col gap-4 md:gap-8">
       <Input label="Name" placeholder="e.g. Stephen King" />
       <Input
         label="Email Address"

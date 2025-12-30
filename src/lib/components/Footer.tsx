@@ -4,7 +4,7 @@ import { state } from "../store";
 export function Footer() {
   const { nextStep, prevStep, hasPrev } = useSnapshot(state);
   return (
-    <div className="z-30 flex w-full items-center justify-between bg-white p-4">
+    <div className="z-30 flex w-full items-center justify-between bg-white p-4 md:mx-auto md:w-lg md:bg-transparent md:p-8 md:pb-12">
       {hasPrev ? (
         <button
           onClick={prevStep}
