@@ -2,6 +2,7 @@ import advancedIcon from "@/assets/images/icon-advanced.svg";
 import arcadeIcon from "@/assets/images/icon-arcade.svg";
 import checkmarkIcon from "@/assets/images/icon-checkmark.svg";
 import proIcon from "@/assets/images/icon-pro.svg";
+import finishIcon from "@/assets/images/icon-thank-you.svg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -40,7 +41,42 @@ const totalSchema = z
 const schemas = [schema1, schema2, schema3, totalSchema];
 
 export function Panel() {
-  const { activeStep, isLastStep, nextStep } = useSnapshot(state);
+  const { finished } = useSnapshot(state);
+  return (
+    <div className="mx-4 max-h-full max-w-xl overflow-auto rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
+      {finished ? <PanelFinished /> : <PanelForm key={String(finished)} />}
+    </div>
+  );
+}
+
+const PanelFinished = () => {
+  const { restart } = useSnapshot(state);
+
+  return (
+    <div className="flex flex-col items-center gap-4 text-center">
+      <img src={finishIcon} alt="Thank you!" className="mb-6" />
+
+      <h2 className="text-2xl font-bold">Thank you!</h2>
+
+      <p className="text-gray-500">
+        Thanks for confirming your subscription!
+        <br />
+        We hope you have fun using our platform. If you ever need support,
+        please feel free to email us at support@loremgaming.com.
+      </p>
+
+      <button
+        className="rounded-md bg-purple-600 px-4 py-2 text-blue-50 hover:bg-purple-600/80"
+        onClick={restart}
+      >
+        Restart
+      </button>
+    </div>
+  );
+};
+
+const PanelForm = () => {
+  const { activeStep, nextStep } = useSnapshot(state);
   const step = steps[activeStep];
 
   const form = useForm<z.infer<typeof totalSchema>>({
@@ -61,17 +97,12 @@ export function Panel() {
     return form.watch(console.log).unsubscribe;
   }, []);
 
-  const onSubmit = form.handleSubmit((_values) => {
-    if (!isLastStep) {
-      nextStep();
-      return;
-    }
-  });
+  const onSubmit = form.handleSubmit(nextStep);
 
   const isYearly = form.watch("yearly");
 
   return (
-    <div className="mx-4 max-w-xl rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
+    <form id="panel-form" onSubmit={onSubmit}>
       <h2 className="text-xl font-bold text-blue-900 text-shadow-blue-900 md:text-3xl">
         {step.title}
       </h2>
@@ -79,16 +110,14 @@ export function Panel() {
       <p className="text-gray-500 md:pt-2">{step.description}</p>
 
       <FormProvider {...form}>
-        <form id="panel-form" onSubmit={onSubmit}>
-          {activeStep === 0 && <Step1 />}
-          {activeStep === 1 && <Step2 />}
-          {activeStep === 2 && <Step3 isYearly={isYearly} />}
-          {activeStep === 3 && <Step4 />}
-        </form>
+        {activeStep === 0 && <Step1 />}
+        {activeStep === 1 && <Step2 />}
+        {activeStep === 2 && <Step3 isYearly={isYearly} />}
+        {activeStep === 3 && <Step4 />}
       </FormProvider>
-    </div>
+    </form>
   );
-}
+};
 
 const Step1 = () => {
   const {

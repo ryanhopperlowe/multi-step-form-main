@@ -37,16 +37,23 @@ export const steps: Step[] = [
 export const state = proxy({
   activeStep: 0,
   size: steps.length,
+  finished: false,
   setStep: (step: number) => (state.activeStep = step),
   nextStep: () => {
     if (state.activeStep < state.size - 1) {
       state.activeStep++;
+    } else {
+      state.finished = true;
     }
   },
   prevStep: () => {
     if (state.activeStep > 0) {
       state.activeStep -= 1;
     }
+  },
+  restart: () => {
+    state.finished = false;
+    state.setStep(0);
   },
   get isLastStep() {
     return state.activeStep === state.size - 1;
