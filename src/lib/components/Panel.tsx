@@ -81,9 +81,10 @@ const PanelForm = () => {
 
   const form = useForm<z.infer<typeof totalSchema>>({
     defaultValues: {
-      email: "",
-      name: "",
-      phone: "",
+      email: "ryan@mail.com",
+      name: "Ryan",
+      phone: "12345678900",
+      plan: "arcade",
       yearly: false,
       customizable: false,
       largerStorage: false,
@@ -124,6 +125,7 @@ const Step1 = () => {
     register,
     formState: { errors },
     setValue,
+    watch,
   } = useFormContext<z.infer<typeof schema1>>();
 
   return (
@@ -148,6 +150,7 @@ const Step1 = () => {
         label="Phone Number"
         placeholder="e.g. +1 234 567 8900"
         {...register("phone", { onChange: () => null })}
+        defaultValue={watch("phone")}
         error={errors.phone?.message}
         onValueChange={({ value }) => setValue("phone", "+" + value)}
       />
