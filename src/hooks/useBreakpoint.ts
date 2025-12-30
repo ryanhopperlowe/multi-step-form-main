@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const breakpoints = {
   sm: 0,
-  md: 400,
+  md: 678,
 };
 
 export const useBreakpoint = () => {
