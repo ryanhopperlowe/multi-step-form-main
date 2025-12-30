@@ -21,7 +21,7 @@ export function Stepper() {
             >
               <div
                 className={cn(
-                  "m-auto flex size-8 items-center justify-center rounded-full border border-blue-200 text-center font-bold text-blue-200",
+                  "m-auto flex size-8 items-center justify-center rounded-full border border-blue-200 text-center font-bold text-blue-200 transition-all duration-300",
                   {
                     ["bg-blue-200 text-blue-900"]: activeStep === i,
                   },
