@@ -9,6 +9,7 @@ import { useSnapshot } from "valtio";
 import { z } from "zod";
 import { state, steps } from "../store";
 import { Input } from "./Input";
+import { useEffect } from "react";
 
 const schema1 = z.object({
   name: z.string().min(1, "Name is required"),
@@ -19,7 +20,10 @@ const schema1 = z.object({
     .min(10, "Invalid phone number"),
 });
 
-const schema2 = z.object({});
+const schema2 = z.object({
+  plan: z.string("Plan option is required").min(1, "Plan option is required"),
+  yearly: z.boolean(),
+});
 const schema3 = z.object({});
 
 const totalSchema = z
@@ -35,10 +39,14 @@ export function Panel() {
   const step = steps[activeStep];
 
   const form = useForm<z.infer<typeof totalSchema>>({
-    defaultValues: { email: "", name: "", phone: "" },
+    defaultValues: { email: "", name: "", phone: "", yearly: false },
     resolver: zodResolver(schemas[activeStep]) as any,
     mode: "onTouched",
   });
+
+  useEffect(() => {
+    return form.watch(console.log).unsubscribe;
+  }, []);
 
   const onSubmit = form.handleSubmit((values) => {
     if (!isLastStep) {
@@ -124,6 +132,19 @@ const radioInfo = [
 ];
 
 const Step2 = () => {
+  const {
+    register,
+    formState: { errors },
+    watch,
+  } = useFormContext<z.infer<typeof schema2>>();
+
+  const isYearly = watch("yearly");
+
+  const calculatePrice = (monthly: number) => {
+    if (isYearly) return `$${monthly * 10}/yr`;
+    return `${monthly}/mo`;
+  };
+
   return (
     <div className="my-4 flex w-full flex-col gap-4 md:gap-8">
       <div className="flex flex-col gap-4">
@@ -137,11 +158,18 @@ const Step2 = () => {
             <span className="flex flex-col">
               <span className="font-bold">{label}</span>
 
-              <span className="text-sm text-gray-500">${monthly}/mo</span>
+              <span className="text-gray-500">{calculatePrice(monthly)}</span>
+              {isYearly && <span className="text-sm">2 months free</span>}
             </span>
-            <input type="radio" name="plan" value={id} className="sr-only" />
+            <input
+              type="radio"
+              value={id}
+              className="sr-only"
+              {...register("plan")}
+            />
           </label>
         ))}
+        <p className="text-red-500">{errors.plan?.message}</p>
       </div>
 
       <label className="group flex items-center justify-center gap-8 rounded-md bg-blue-100 p-4 font-medium has-focus-within:outline has-focus-within:outline-purple-600">
@@ -150,7 +178,11 @@ const Step2 = () => {
         </span>
         <span className="relative h-6 w-12 rounded-full bg-blue-900">
           <span className="absolute z-40 m-1 size-4 rounded-full bg-white transition-all duration-300 has-checked:translate-x-6">
-            <input type="checkbox" className="peer sr-only" />
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              {...register("yearly")}
+            />
           </span>
         </span>{" "}
         <span className="text-gray-500 transition-all duration-300 group-has-checked:text-blue-900">
