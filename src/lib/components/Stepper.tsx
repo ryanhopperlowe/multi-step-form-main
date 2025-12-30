@@ -12,7 +12,7 @@ export function Stepper() {
 
   return (
     <div className={`relative md:m-4`}>
-      <ul className="my-8 flex w-full justify-center gap-4 overflow-visible md:ms-8 md:h-full md:w-75 md:flex-col md:items-start md:justify-start md:gap-12">
+      <ul className="my-8 flex w-full justify-center gap-4 overflow-visible md:ms-8 md:w-75 md:flex-col md:items-start md:justify-start md:gap-12">
         {steps.map(({ id, title }, i) => (
           <li key={id} className="z-10">
             <button

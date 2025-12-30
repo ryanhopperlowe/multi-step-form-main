@@ -1,21 +1,18 @@
+import { Panel } from "./Panel";
 import { Stepper } from "./Stepper";
 
 export function Layout() {
   return (
-    <div className="h-screen flex md:flex-row flex-col bg-blue-50">
+    <div className="flex h-screen flex-col bg-blue-100 md:flex-row md:bg-blue-50">
       <Stepper />
 
-      <div className="flex-1">
+      <div className="z-20 flex flex-1 flex-col justify-between">
         <Panel />
-      </div>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
-}
-
-function Panel() {
-  return "Panel";
 }
 
 function Footer() {

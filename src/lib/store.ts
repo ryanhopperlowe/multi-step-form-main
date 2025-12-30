@@ -1,10 +1,37 @@
 import { proxy } from "valtio";
 
-export const steps = [
-  { id: 1, title: "Your Info" },
-  { id: 2, title: "Select Plan" },
-  { id: 3, title: "Add-Ons" },
-  { id: 4, title: "Summary" },
+type Step = {
+  id: number;
+  title: string;
+  label: string;
+  description: string;
+};
+
+export const steps: Step[] = [
+  {
+    id: 1,
+    label: "Your info",
+    title: "Personal Info",
+    description: "Please provide your name, email address, and phone number",
+  },
+  {
+    id: 2,
+    label: "Select Plan",
+    title: "Select your plan",
+    description: "You have the option of monthly or yearly billing",
+  },
+  {
+    id: 3,
+    label: "Add-Ons",
+    title: "Pick add-ons",
+    description: "Add-ons help enhance your gaming experience",
+  },
+  {
+    id: 4,
+    label: "Summary",
+    title: "Finishing up",
+    description: "Double-check everything looks OK before confirming",
+  },
 ];
 
 export const state = proxy({
