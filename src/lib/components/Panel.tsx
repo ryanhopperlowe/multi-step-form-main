@@ -20,17 +20,18 @@ const schema1 = z.object({
     .min(10, "Invalid phone number"),
 });
 
-const schema2 = z.object({
+const schema2 = schema1.extend({
   plan: z.string("Plan option is required").min(1, "Plan option is required"),
   yearly: z.boolean(),
 });
-const schema3 = z.object({});
 
-const totalSchema = z
-  .object({})
-  .extend(schema1.shape)
-  .extend(schema2.shape)
-  .extend(schema3.shape);
+const schema3 = schema2.extend({
+  onlineService: z.boolean(),
+  largerStorage: z.boolean(),
+  customizable: z.boolean(),
+});
+
+const totalSchema = schema3;
 
 const schemas = [schema1, schema2, schema3, totalSchema];
 
@@ -79,7 +80,7 @@ const Step1 = () => {
     register,
     formState: { errors },
     setValue,
-  } = useFormContext<z.infer<typeof totalSchema>>();
+  } = useFormContext<z.infer<typeof schema1>>();
 
   return (
     <div className="my-4 space-y-4 md:gap-8">
@@ -195,16 +196,19 @@ const Step2 = () => {
 
 const checkboxInfo = [
   {
+    id: "onlineService" as const,
     title: "Online Service",
     description: "Access to multiplayer games",
     monthly: 1,
   },
   {
+    id: "largerStorage" as const,
     title: "Larger Storage",
     description: "Extra 1TB of cloude save",
     monthly: 2,
   },
   {
+    id: "customizable" as const,
     title: "Customizable Profile",
     description: "Custom theme on your profile",
     monthly: 2,
@@ -212,9 +216,18 @@ const checkboxInfo = [
 ];
 
 const Step3 = () => {
+  const { register, watch } = useFormContext<z.infer<typeof schema3>>();
+
+  const isYearly = watch("yearly");
+
+  const calculatePrice = (monthly: number) => {
+    if (isYearly) return `$${monthly * 10}/yr`;
+    return `${monthly}/mo`;
+  };
+
   return (
     <div className="my-4 flex flex-col gap-4">
-      {checkboxInfo.map(({ description, monthly, title }) => (
+      {checkboxInfo.map(({ description, monthly, title, id }) => (
         <label
           key={title}
           className="group flex items-center gap-4 rounded-xl p-4 outline outline-gray-500 transition-all duration-100 has-checked:bg-blue-100 has-checked:outline-purple-600 has-focus-within:outline-2 has-focus-within:outline-purple-600"
@@ -225,7 +238,7 @@ const Step3 = () => {
               className="invisible size-4 p-1 transition-all duration-300 group-has-checked:visible"
               alt="checked"
             />
-            <input type="checkbox" className="sr-only" />
+            <input type="checkbox" className="sr-only" {...register(id)} />
           </span>
 
           <span className="flex flex-1 flex-col">
@@ -233,7 +246,7 @@ const Step3 = () => {
             <span className="text-gray-500">{description}</span>
           </span>
 
-          <span className="text-purple-600">+${monthly}/mo</span>
+          <span className="text-purple-600">{calculatePrice(monthly)}</span>
         </label>
       ))}
     </div>
