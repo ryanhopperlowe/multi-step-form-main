@@ -3,13 +3,13 @@ import arcadeIcon from "@/assets/images/icon-arcade.svg";
 import checkmarkIcon from "@/assets/images/icon-checkmark.svg";
 import proIcon from "@/assets/images/icon-pro.svg";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { useSnapshot } from "valtio";
 import { z } from "zod";
 import { state, steps } from "../store";
 import { Input } from "./Input";
-import { useEffect } from "react";
 
 const schema1 = z.object({
   name: z.string().min(1, "Name is required"),
@@ -20,18 +20,22 @@ const schema1 = z.object({
     .min(10, "Invalid phone number"),
 });
 
-const schema2 = schema1.extend({
+const schema2 = z.object({
   plan: z.string("Plan option is required").min(1, "Plan option is required"),
   yearly: z.boolean(),
 });
 
-const schema3 = schema2.extend({
+const schema3 = z.object({
   onlineService: z.boolean(),
   largerStorage: z.boolean(),
   customizable: z.boolean(),
 });
 
-const totalSchema = schema3;
+const totalSchema = z
+  .object({})
+  .extend(schema1.shape)
+  .extend(schema2.shape)
+  .extend(schema3.shape);
 
 const schemas = [schema1, schema2, schema3, totalSchema];
 
@@ -40,7 +44,15 @@ export function Panel() {
   const step = steps[activeStep];
 
   const form = useForm<z.infer<typeof totalSchema>>({
-    defaultValues: { email: "", name: "", phone: "", yearly: false },
+    defaultValues: {
+      email: "",
+      name: "",
+      phone: "",
+      yearly: false,
+      customizable: false,
+      largerStorage: false,
+      onlineService: false,
+    },
     resolver: zodResolver(schemas[activeStep]) as any,
     mode: "onTouched",
   });
@@ -49,12 +61,14 @@ export function Panel() {
     return form.watch(console.log).unsubscribe;
   }, []);
 
-  const onSubmit = form.handleSubmit((values) => {
+  const onSubmit = form.handleSubmit((_values) => {
     if (!isLastStep) {
       nextStep();
       return;
     }
   });
+
+  const isYearly = form.watch("yearly");
 
   return (
     <div className="mx-4 max-w-xl rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
@@ -68,7 +82,7 @@ export function Panel() {
         <form id="panel-form" onSubmit={onSubmit}>
           {activeStep === 0 && <Step1 />}
           {activeStep === 1 && <Step2 />}
-          {activeStep === 2 && <Step3 />}
+          {activeStep === 2 && <Step3 isYearly={isYearly} />}
         </form>
       </FormProvider>
     </div>
@@ -215,10 +229,8 @@ const checkboxInfo = [
   },
 ];
 
-const Step3 = () => {
-  const { register, watch } = useFormContext<z.infer<typeof schema3>>();
-
-  const isYearly = watch("yearly");
+const Step3 = ({ isYearly }: { isYearly: boolean }) => {
+  const { register } = useFormContext<z.infer<typeof schema3>>();
 
   const calculatePrice = (monthly: number) => {
     if (isYearly) return `$${monthly * 10}/yr`;
