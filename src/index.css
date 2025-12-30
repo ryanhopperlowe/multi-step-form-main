@@ -25,7 +25,7 @@
 
   --breakpoint-*: initial;
   --breakpoint-sm: 0;
-  --breakpoint-md: 678px;
+  --breakpoint-md: 745px;
 }
 
 :root {
