@@ -162,11 +162,11 @@ const Step2 = () => {
 
   return (
     <div className="my-4 flex w-full flex-col gap-4 md:gap-8">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:flex-row md:justify-between">
         {radioInfo.map(({ icon, label, monthly, id }) => (
           <label
             key={id}
-            className="flex items-center gap-4 rounded-lg border border-gray-500 p-4 has-checked:border-purple-600 has-checked:bg-blue-100 has-focus-within:outline has-focus-within:outline-purple-600"
+            className="flex items-center gap-4 rounded-lg border border-gray-500 p-4 has-checked:border-purple-600 has-checked:bg-blue-100 has-focus-within:outline has-focus-within:outline-purple-600 md:flex-1 md:flex-col md:items-start md:gap-8"
           >
             <img src={icon} alt={icon} className="" />
 
@@ -184,8 +184,8 @@ const Step2 = () => {
             />
           </label>
         ))}
-        <p className="text-red-500">{errors.plan?.message}</p>
       </div>
+      <p className="text-red-500">{errors.plan?.message}</p>
 
       <label className="group flex items-center justify-center gap-8 rounded-md bg-blue-100 p-4 font-medium has-focus-within:outline has-focus-within:outline-purple-600">
         <span className="text-blue-900 transition-all duration-300 group-has-checked:text-gray-500">
