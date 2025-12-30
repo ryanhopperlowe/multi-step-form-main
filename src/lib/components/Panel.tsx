@@ -1,8 +1,12 @@
 import advancedIcon from "@/assets/images/icon-advanced.svg";
 import arcadeIcon from "@/assets/images/icon-arcade.svg";
-import proIcon from "@/assets/images/icon-pro.svg";
 import checkmarkIcon from "@/assets/images/icon-checkmark.svg";
+import proIcon from "@/assets/images/icon-pro.svg";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { PatternFormat } from "react-number-format";
 import { useSnapshot } from "valtio";
+import { z } from "zod";
 import { state, steps } from "../store";
 import { Input } from "./Input";
 
@@ -24,16 +28,51 @@ export function Panel() {
   );
 }
 
+const schema1 = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email().min(1, "Email is required"),
+  phone: z
+    .string("Phone is required")
+    .min(1, "Phone is required")
+    .min(10, "Invalid phone number"),
+});
+
 const Step1 = () => {
+  const {
+    register,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: { email: "", name: "", phone: "" },
+    resolver: zodResolver(schema1),
+    mode: "onTouched",
+  });
+
   return (
-    <div className="my-4 flex flex-col gap-4 md:gap-8">
-      <Input label="Name" placeholder="e.g. Stephen King" />
+    <div className="my-4 space-y-4 md:gap-8">
+      <Input
+        label="Name"
+        placeholder="e.g. Stephen King"
+        {...register("name")}
+        error={errors.name?.message}
+      />
       <Input
         label="Email Address"
         type="email"
         placeholder="e.g. stephenking@lorem.com"
+        {...register("email")}
+        error={errors.email?.message}
       />
-      <Input label="Phone Number" placeholder="e.g. +1 234 567 8900" />
+      <PatternFormat
+        format="+# (###) ###-####"
+        mask=" "
+        customInput={Input}
+        label="Phone Number"
+        placeholder="e.g. +1 234 567 8900"
+        {...register("phone", { onChange: () => null })}
+        error={errors.phone?.message}
+        onValueChange={({ value }) => setValue("phone", "+" + value)}
+      />
     </div>
   );
 };
