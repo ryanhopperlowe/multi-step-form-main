@@ -4,7 +4,6 @@ import checkmarkIcon from "@/assets/images/icon-checkmark.svg";
 import proIcon from "@/assets/images/icon-pro.svg";
 import finishIcon from "@/assets/images/icon-thank-you.svg";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { useSnapshot } from "valtio";
@@ -43,7 +42,7 @@ const schemas = [schema1, schema2, schema3, totalSchema];
 export function Panel() {
   const { finished } = useSnapshot(state);
   return (
-    <div className="mx-4 max-h-full max-w-xl overflow-auto rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
+    <div className="mx-4 max-h-full overflow-auto rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:max-w-xl md:bg-transparent">
       {finished ? <PanelFinished /> : <PanelForm key={String(finished)} />}
     </div>
   );
@@ -81,10 +80,10 @@ const PanelForm = () => {
 
   const form = useForm<z.infer<typeof totalSchema>>({
     defaultValues: {
-      email: "ryan@mail.com",
-      name: "Ryan",
-      phone: "12345678900",
-      plan: "arcade",
+      email: "",
+      name: "",
+      phone: "",
+      plan: "",
       yearly: false,
       customizable: false,
       largerStorage: false,
@@ -93,10 +92,6 @@ const PanelForm = () => {
     resolver: zodResolver(schemas[activeStep]) as any,
     mode: "onTouched",
   });
-
-  useEffect(() => {
-    return form.watch(console.log).unsubscribe;
-  }, []);
 
   const onSubmit = form.handleSubmit(nextStep);
 
@@ -317,7 +312,7 @@ const Step4 = () => {
             </p>
             <button
               className="cursor-pointer text-gray-500 underline"
-              onClick={() => state.setStep(2)}
+              onClick={() => state.setStep(1)}
             >
               Change
             </button>

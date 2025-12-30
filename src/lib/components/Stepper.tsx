@@ -6,7 +6,7 @@ import { useSnapshot } from "valtio";
 import { state, steps } from "../store";
 
 export function Stepper() {
-  const { activeStep, setStep } = useSnapshot(state);
+  const { activeStep } = useSnapshot(state);
 
   const { isSm } = useBreakpoint();
 
@@ -15,10 +15,7 @@ export function Stepper() {
       <ul className="my-8 flex w-full justify-center gap-4 overflow-visible md:ms-8 md:w-75 md:flex-col md:items-start md:justify-start md:gap-12">
         {steps.map(({ id, title }, i) => (
           <li key={id} className="z-10">
-            <button
-              onClick={() => setStep(i)}
-              className="flex items-center gap-4"
-            >
+            <div className="flex items-center gap-4">
               <div
                 className={cn(
                   "m-auto flex size-8 items-center justify-center rounded-full border border-blue-200 text-center font-bold text-blue-200 transition-all duration-300",
@@ -39,7 +36,7 @@ export function Stepper() {
                   {title.toUpperCase()}
                 </p>
               </div>
-            </button>
+            </div>
           </li>
         ))}
       </ul>

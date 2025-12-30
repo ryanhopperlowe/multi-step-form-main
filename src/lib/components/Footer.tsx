@@ -6,7 +6,7 @@ export function Footer() {
   const { prevStep, hasPrev, isLastStep } = useSnapshot(state);
 
   return (
-    <div className="z-30 mt-8 flex w-full max-w-xl items-center justify-between bg-white p-4 md:mx-auto md:bg-transparent md:p-8 md:pb-12">
+    <div className="z-30 mt-8 flex w-full items-center justify-between bg-white p-4 md:mx-auto md:max-w-xl md:bg-transparent md:p-8 md:pb-12">
       {hasPrev ? (
         <button
           onClick={prevStep}
