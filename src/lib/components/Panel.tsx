@@ -3,30 +3,12 @@ import arcadeIcon from "@/assets/images/icon-arcade.svg";
 import checkmarkIcon from "@/assets/images/icon-checkmark.svg";
 import proIcon from "@/assets/images/icon-pro.svg";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { useSnapshot } from "valtio";
 import { z } from "zod";
 import { state, steps } from "../store";
 import { Input } from "./Input";
-
-export function Panel() {
-  const { activeStep } = useSnapshot(state);
-  const step = steps[activeStep];
-  return (
-    <div className="mx-4 max-w-xl rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
-      <h2 className="text-xl font-bold text-blue-900 text-shadow-blue-900 md:text-3xl">
-        {step.title}
-      </h2>
-
-      <p className="text-gray-500 md:pt-2">{step.description}</p>
-
-      {activeStep === 0 && <Step1 />}
-      {activeStep === 1 && <Step2 />}
-      {activeStep === 2 && <Step3 />}
-    </div>
-  );
-}
 
 const schema1 = z.object({
   name: z.string().min(1, "Name is required"),
@@ -37,16 +19,59 @@ const schema1 = z.object({
     .min(10, "Invalid phone number"),
 });
 
+const schema2 = z.object({});
+const schema3 = z.object({});
+
+const totalSchema = z
+  .object({})
+  .extend(schema1.shape)
+  .extend(schema2.shape)
+  .extend(schema3.shape);
+
+const schemas = [schema1, schema2, schema3, totalSchema];
+
+export function Panel() {
+  const { activeStep, isLastStep, nextStep } = useSnapshot(state);
+  const step = steps[activeStep];
+
+  const form = useForm<z.infer<typeof totalSchema>>({
+    defaultValues: { email: "", name: "", phone: "" },
+    resolver: zodResolver(schemas[activeStep]) as any,
+    mode: "onTouched",
+  });
+
+  const onSubmit = form.handleSubmit((values) => {
+    if (!isLastStep) {
+      nextStep();
+      return;
+    }
+  });
+
+  return (
+    <div className="mx-4 max-w-xl rounded-xl bg-white p-8 md:mx-auto md:mt-12 md:w-full md:bg-transparent">
+      <h2 className="text-xl font-bold text-blue-900 text-shadow-blue-900 md:text-3xl">
+        {step.title}
+      </h2>
+
+      <p className="text-gray-500 md:pt-2">{step.description}</p>
+
+      <FormProvider {...form}>
+        <form id="panel-form" onSubmit={onSubmit}>
+          {activeStep === 0 && <Step1 />}
+          {activeStep === 1 && <Step2 />}
+          {activeStep === 2 && <Step3 />}
+        </form>
+      </FormProvider>
+    </div>
+  );
+}
+
 const Step1 = () => {
   const {
     register,
     formState: { errors },
     setValue,
-  } = useForm({
-    defaultValues: { email: "", name: "", phone: "" },
-    resolver: zodResolver(schema1),
-    mode: "onTouched",
-  });
+  } = useFormContext<z.infer<typeof totalSchema>>();
 
   return (
     <div className="my-4 space-y-4 md:gap-8">

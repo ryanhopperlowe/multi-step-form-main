@@ -17,7 +17,8 @@ export function Footer() {
       )}
       <button
         className="rounded-sm bg-blue-900 px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900/70"
-        onClick={nextStep}
+        type="submit"
+        form="panel-form"
       >
         Next Step
       </button>
