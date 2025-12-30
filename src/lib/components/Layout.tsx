@@ -8,11 +8,11 @@ export function Layout() {
   const { finished } = useSnapshot(state);
 
   return (
-    <div className="flex h-screen flex-col bg-blue-100 md:flex-row md:bg-blue-50">
+    <div className="flex h-screen flex-col overflow-hidden bg-blue-100 md:flex-row md:bg-blue-50">
       <Stepper />
 
-      <div className="z-20 flex flex-1 flex-col justify-between">
-        <div className="flex-1">
+      <div className="z-20 flex flex-1 flex-col justify-between overflow-hidden">
+        <div className="flex-1 overflow-hidden">
           <Panel />
         </div>
 
